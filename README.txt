@@ -1,6 +1,6 @@
 1. 
 Online running time: 
-Worst Case: O(N*N!) (All permutations are in the dictionary), where N is the length of the query
+Worst Case: O(N*N!) (All permutations are in the dictionary), where N is the length of the query. 
 
 Offline running time:
 O(N), where N is the total number of characters in the dictionary

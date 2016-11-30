@@ -3,12 +3,27 @@ from itertools import permutations
 from sets import Set
 
 class TrieNode:
+	""" A TrieNode implemetation
+	@c: the character represented this node
+	@children: its children TrieNodes
+	@isLeaf: boolean; whether this is a leaf TrieNode
+	"""
 	def __init__(self, c):
 		self.c = c
 		self.children = {}
 		self.isLeaf = True
 
 class Trie:
+	""" A wrapper of TrieNode
+	@root: its root TrieNode
+
+	>>> trie = Trie()
+	>>> trie.add_word('apple')
+	>>> trie.find_word('apple')[0]
+	True
+	>>> trie.find_word('app')[0]
+	False
+	"""
 	def __init__(self):
 		self.root = TrieNode(None)
 
@@ -29,67 +44,53 @@ class Trie:
 			node = node.children[c]
 		return node.isLeaf, node, i
 
+def all_casings(input_string):
+	if not input_string:
+		yield ""
+	else:
+		first = input_string[:1]
+		if first.lower() == first.upper():
+			for sub_casing in all_casings(input_string[1:]):
+				yield first + sub_casing
+	  	else:
+	  		for sub_casing in all_casings(input_string[1:]):
+	  			yield first.lower() + sub_casing
+	  			yield first.upper() + sub_casing
+
+
 
 def find_anagrams(word, trie):
-	word = word.lower()
 	perms = [''.join(p) for p in permutations(word)]
 	res = Set([])
 	taboo = None
 
-
-
-	for perm in perms:
-		if trie.find_word(perm)[0]:
-			res.add(perm)
+	for p in perms:
+		for perm in all_casings(p):
+			if taboo:
+				index, char = taboo
+				if perm[index] == char:
+					continue
+				else:
+					taboo = None
+			flag, node, i = trie.find_word(perm)
+			if not flag:
+				taboo = i, node.c
+			else:
+				res.add(perm)
 	return res
-
-	# for perm in perms:
-	# 	# Process taboos
-	# 	if taboo:
-	# 		index, char = taboo
-	# 		if perm[index] == char:
-	# 			continue
-	# 		else:
-	# 			taboo = None
-	# 	flag, node, i = trie.find_word(perm)
-	# 	if not flag:
-	# 		taboo = i, node.c
-	# 	else:
-	# 		res.append(perm)
-	# return res
-
-
-
 
 def build_trie(filename):
 	with open(filename) as f:
 		lines = f.read().splitlines()
 	trie = Trie()
 	for word in lines:
-		word = word.lower()
 		trie.add_word(word)
 	return trie
 
 
 if __name__ == "__main__":
-	# trie = Trie()
-
-	# trie.add_word("alpha")
-	# trie.add_word("beta")
-	# trie.add_word("gamma")
-	# trie.add_word("delta")
-	# trie.add_word("beat")
-	# trie.add_word("bate")
-	# trie.add_word("magma")
-	# trie.add_word("taled")
-
-	# print trie.find_word("alpha")
-
-
-
-	# print "Processing data"
+	print "Processing data"
 	trie = build_trie(sys.argv[1])
-	print trie.find_word("alpha")
 	print "Finished processing"
 	while True:
 		try:
@@ -101,7 +102,3 @@ if __name__ == "__main__":
 				print " ".join(sorted(res))
 		except KeyboardInterrupt:
 			break
-
-
-
-# def anagram(w, dict):
