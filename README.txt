@@ -1,20 +1,19 @@
 1. 
 Online running time: 
-Worst Case: O(N*2^(N!)) (All permutations case-insensitive are in the dictionary), where N is the length of the query. 
+O(NlogN+mlogm) where N is the number of anagrams, m is the number of characters of query string
 
 Offline running time:
-O(N), where N is the total number of characters in the dictionary
+O(Nlogm), where N is the total number of characters in the dictionary, m is the number of character of the longest string
 
 2. 
 Memory Complexity: 
-Worst Case: O(N), where N is the total number of characters in the dictionary
+O(N), where N is the total number of characters in the dictionary
 
 
 3. 
 Optimization:
-Store the trie data structure on disk. The children field of each node is the filenames of other nodes stored
-on the disk. This can be done by using the pickle library of python. When traversing the trie, we only keep one trie node in memory.
+Store the filenames of serialized nodes that contain list of anagrams as values of the hashmap. 
 
 
 ### Algorithm description:
-During the offline phase, I built a trie and store all the words into the trie. This allows fast string query. During the online phase, I iterate through all the permutations of the query word and check if its in the dictionary by querying the trie. I made a small optmization at querying the trie: since the permutations are generated in order, if a word does not exist in the trie (terminate at some node), all permutations that has the same perfix are directly ignored. 
+During the offline phase, I built a hashmap where key is the sorted lower case string, and values are the words in the dictionary that corresponds. During online phase, I sort the lower case query and find its corresponding anagrams in O(1) time. Later I sort the anagrams in lexical order
